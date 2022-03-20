@@ -1,0 +1,28 @@
+version: "3.2"
+services:
+  project:
+    restart: always
+    container_name: code
+    command : bash -c "python manage.py runserver 0.0.0.0:8080"
+    build:
+      context: ./api/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      
+  frontend:
+    restart: always
+    command : yarn dev
+    container_name: front
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    depends_on:
+      - project
+
+networks:
+  db-net:
+    driver: bridge
