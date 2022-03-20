@@ -1,18 +1,18 @@
 import Box, { BoxProps } from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { Button } from '@mui/material';
 import Head from 'next/head';
 
 
 //import custom components
-import TermLengthBox from 'src/components/TermLengthBox';
-import AmortizationField from 'src/components/AmortizationField';
-import DownPaymentField from 'src/components/DownPaymentField';
-import PriceTextField from 'src/components/PriceTextField';
-import TermTypeBox from 'src/components/TermTypeBox';
-import LenderInfoRow from 'src/components/LenderInfoRow';
+import TermLengthBox from './TermLengthBox';
+import AmortizationField from './AmortizationField';
+import DownPaymentField from './DownPaymentField';
+import PriceTextField from './PriceTextField';
+import TermTypeBox from './TermTypeBox';
+import LenderInfoRow from './LenderInfoRow';
 
 
 //item component for stuff in box
@@ -28,17 +28,65 @@ import LenderInfoRow from 'src/components/LenderInfoRow';
 //     );
 // }
 
-
+var banks = []
 function MortgageForm() {
+    const termKey = { 1: "fixed", 2: "variable" }
 
-    const [mortgageState, setMortgageState] = useState({ termLength: 1, termLengths: [1, 2, 3, 4], termType: "1", homePrice: '500000', downPayment: "10", mortgageAmount: '450000.00', amortization: '2' })
+    const [mortgageState, setMortgageState] = useState({ termLength: 1, termLengths: [], termType: "1", homePrice: '500000', downPayment: "10", mortgageAmount: '450000.00', amortization: '25' })
+    const [bankState, setBankState] = useState([])
     //function to get new price from home price change
+    
+    
+    const bankStateChange=(currState)=>{
+        const mortgageType = termKey[currState.termType];
+        const mortgageLength = currState.termLength;
+        const downPayment = parseInt(currState.downPayment) >= 20 ? '2' : '1';
+
+        //fetch rate data from backend
+        fetch(`http://localhost:8080/api/mortgageSearch/rateSearch/?mortgageType=${mortgageType}&mortgageLength=${mortgageLength}&downPayment=1`)
+            .then(response => response.json())
+            .then(data => {
+
+                //get correct downpayment level
+                let correctDownPayment = data.filter(x => { return x.down_payment_level === downPayment })
+
+                let filteredResults = []
+
+                //remove duplicate banks
+                //array is already sorted by rate so if one exists we remove it since it will be higher
+                correctDownPayment.forEach(bank => {
+                    if (!filteredResults.some(el => { return el.source === bank.source })) {
+                        filteredResults.push(bank)
+                    }
+                })
+
+                filteredResults.forEach(function (bankObj, index) {
+                    // part and arr[index] point to the same object
+                    // so changing the object that part points to changes the object that arr[index] points to
+                    let principal = parseFloat(currState.mortgageAmount)
+                    let percentageRate = parseFloat(bankObj.rate) / 12 / 100
+                    let lengthOfLoan = 12 * parseInt(currState.amortization)
+                    var monthlyPayment = principal * ((percentageRate * (Math.pow((1 + percentageRate), lengthOfLoan))) / ((Math.pow((1 + percentageRate), lengthOfLoan)) - 1))
+                    var moneyString = monthlyPayment.toFixed(2).toLocaleString('en-US')
+                    bankObj.payment = moneyString;
+                });
+
+                console.log(filteredResults)
+                setBankState(filteredResults);
+            });
+        
+
+
+
+    }
+
     const priceChangeHandler = (price) => {
 
         setMortgageState(prevState => {
 
             // calculate the new mortgage amount
             let newMortgageAmount = `${(1 - (parseFloat(prevState.downPayment) / 100)) * parseFloat(price)}`
+            bankStateChange({ ...prevState, homePrice: price, mortgageAmount: newMortgageAmount });
             return { ...prevState, homePrice: price, mortgageAmount: newMortgageAmount }
         })
 
@@ -55,6 +103,7 @@ function MortgageForm() {
             }
 
             let newDownString = `${Math.ceil(newDownPayment)}`;
+            bankStateChange({ ...prevState, downPayment: newDownString, mortgageAmount: price });
             return { ...prevState, downPayment: newDownString, mortgageAmount: price }
         })
 
@@ -68,6 +117,8 @@ function MortgageForm() {
         setMortgageState(prevState => {
             // calculate the new mortgage amount
             let newMortgageAmount = `${(1 - (parseFloat(downPaymentPrice) / 100)) * parseFloat(prevState.homePrice)}`
+
+            bankStateChange({ ...prevState, downPayment: downPaymentPrice, mortgageAmount: newMortgageAmount })
             return { ...prevState, downPayment: downPaymentPrice, mortgageAmount: newMortgageAmount }
         })
 
@@ -78,6 +129,7 @@ function MortgageForm() {
         setMortgageState(prevState => {
 
             // calculate the new mortgage amount
+            bankStateChange({ ...prevState, amortization: `${Math.floor(parseInt(years))}` })
             return { ...prevState, amortization: `${Math.floor(parseInt(years))}` }
         })
     }
@@ -86,6 +138,7 @@ function MortgageForm() {
 
         //change number of years
         setMortgageState(prevState => {
+            bankStateChange({ ...prevState, termLength: years })
             return { ...prevState, termLength: years }
         })
     }
@@ -93,69 +146,28 @@ function MortgageForm() {
     const termTypeChangeHandler = (termType) => {
 
         //fetch list of term lengths from DB depending on type
-        var terms = [1, 20, 100];
-        if (termType === 1) {
-            terms = [1, 2, 10];
-        } else {
-            terms = [1, 5, 25];
-        }
+        fetch(`http://localhost:8080/api/mortgageSearch/typeSearch/?mortgageType=${termKey[termType]}`)
+            .then(response => response.json())
+            .then(data => {
+                var terms = []
+                //push new term lengths in
+                data.forEach(x => { terms.push(x.year) })
+                setMortgageState(prevState => {
 
-
-        //DONT FORGET TO UPDATE TERMLENGTH HERE TOO
-        setMortgageState(prevState => {
-            return { ...prevState, termType: termType, termLengths: terms }
-        })
-
+                    bankStateChange({ ...prevState, termType: termType, termLengths: terms })
+                    return { ...prevState, termType: termType, termLengths: terms }
+                })
+            });
     }
 
-    // var bankInfo=[];
+    //run on start up to load info for default state
+    useEffect(()=>{
+        
+        //this will get the term lengths and update state immediately
+        termTypeChangeHandler(mortgageState.termType);
 
-    const bankInfo = [{
-        "id": 260,
-        "source": "BMO",
-        "year": 2,
-        "down_payment_level": 3,
-        "first_mortgage": true,
-        "long_amortization": false,
-        "rate_type": "fixed",
-        "rate": 3.16,
-        "posted": false,
-        "refinance_rate": null,
-        "type": "fixed",
-        "payment": '$2,403'
-    },
-    {
-        "id": 260,
-        "source": "TD",
-        "year": 2,
-        "down_payment_level": 3,
-        "first_mortgage": true,
-        "long_amortization": false,
-        "rate_type": "fixed",
-        "rate": 3.16,
-        "posted": false,
-        "refinance_rate": null,
-        "type": "fixed",
-        "payment": '$3,453'
-    },
-    {
-        "id": 260,
-        "source": "Spectrum Canada",
-        "year": 2,
-        "down_payment_level": 3,
-        "first_mortgage": true,
-        "long_amortization": false,
-        "rate_type": "fixed",
-        "rate": 3.16,
-        "posted": false,
-        "refinance_rate": null,
-        "type": "fixed",
-        "payment": '$10,000'
-    }
-    ]
+    }, [])
     //get bank info from backend and add to this array, do calculations on backend
-
-
     return (
 
         <div className="bg-[#F7FAFC]" >
@@ -164,8 +176,8 @@ function MortgageForm() {
                 <title>Best Saskatoon Mortgages</title>
                 <link rel="shortcut icon" href="/static/favicon.ico" />
             </Head>
-           
-            <Grid container spacing={0} px={4} py={2}  justifyContent="flex-start" alignItems="flex-start" direction="row">
+
+            <Grid container spacing={0} px={4} py={2} justifyContent="flex-start" alignItems="flex-start" direction="row">
 
                 {/* mortgage calculator part */}
                 <Grid item justifyContent="left" px={1} xs={12} sm={12} md={12} lg={3} sx={{ maxWidth: 275 }} >
@@ -212,7 +224,7 @@ function MortgageForm() {
                             </Grid>
                         </Grid>
 
-                        <LenderInfoRow mortgageState={mortgageState} bankInfo={bankInfo}></LenderInfoRow>
+                        <LenderInfoRow mortgageState={mortgageState} bankInfo={bankState}></LenderInfoRow>
 
 
                     </Grid>

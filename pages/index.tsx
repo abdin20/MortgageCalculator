@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import MortgageForm from './mortgageForm';
+import MortgageForm from '../src/components/MortgageForm';
 import {FC, useEffect, useState} from 'react';
 
 
@@ -11,10 +11,10 @@ const Home: FC = () => {
         <>
             <Head>
                 <title>Best Saskatoon Mortgages</title>
-                <link rel="shortcut icon" href="/favicon.ico" />
-            <MortgageForm></MortgageForm>
+                <link rel="shortcut icon" href="/static/favicon.ico" />
             </Head>
-        
+
+            <MortgageForm></MortgageForm>
 
         </>
     );
