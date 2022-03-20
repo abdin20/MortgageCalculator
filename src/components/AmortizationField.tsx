@@ -8,13 +8,13 @@ function AmortizationField(props) {
         let currText = event.target.value;
 
         //check for default value to remove 0
-        if (currText.indexOf("0") === 0) {
+        if (currText.indexOf("1") === 0) {
             currText = currText.substring(1);
         }
 
         //if input has nothing we set default to 0
         if (currText.length < 1) {
-            props.onAmortizationChange('0');
+            props.onAmortizationChange('1');
             //else we parse the field only if its a number
         } else if (currText.length > 0 && !isNaN(currText)) {
             props.onAmortizationChange(currText);

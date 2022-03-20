@@ -67,11 +67,10 @@ function MortgageForm() {
                     let percentageRate = parseFloat(bankObj.rate) / 12 / 100
                     let lengthOfLoan = 12 * parseInt(currState.amortization)
                     var monthlyPayment = principal * ((percentageRate * (Math.pow((1 + percentageRate), lengthOfLoan))) / ((Math.pow((1 + percentageRate), lengthOfLoan)) - 1))
-                    var moneyString = monthlyPayment.toFixed(2).toLocaleString('en-US')
+                    var moneyString = `${monthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+                    
                     bankObj.payment = moneyString;
                 });
-
-                console.log(filteredResults)
                 setBankState(filteredResults);
             });
         
@@ -213,13 +212,13 @@ function MortgageForm() {
                     <Grid container direction="column">
                         {/* first row in column is term stuff */}
                         <Grid container justifyContent="center" alignItems="center" direction="row" sx={{ backGroundColor: '#EDF2F7' }} p={2} spacing={1}>
-                            <Grid item xs={3} >
+                            <Grid item xs={3} sm={3} md={3} lg={3} px={1} >
                                 <Button variant="contained" sx={{ color: 'white', backgroundColor: '#ED8936', textTransform: 'none' }}>New Mortgage</Button>
                             </Grid>
-                            <Grid item xs={3} >
+                            <Grid item xs={3}  sm={3} md={3} lg={3} >
                                 <Button variant="contained" sx={{ color: 'black', backgroundColor: '#FFFFFF', textTransform: 'none' }}>Switch Transfer</Button>
                             </Grid>
-                            <Grid item xs={3}>
+                            <Grid item xs={3} sm={3} md={3} lg={3} >
                                 <Button variant="contained" sx={{ color: 'black', backgroundColor: '#FFFFFF', textTransform: 'none' }}>Refinancing</Button>
                             </Grid>
                         </Grid>

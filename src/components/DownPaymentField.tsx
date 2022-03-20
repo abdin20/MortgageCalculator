@@ -7,10 +7,12 @@ function DownPaymentField(props) {
 
     //use this to clean up input
     const onDownPaymentTextFieldChange = (event) => {
+        //regex used to check for valid number
+        var regEx = new RegExp("^[0-9]+[.]?[0-9]*$");
         let currText=event.target.value;
 
-        //remove leading zeros
-        if(currText.indexOf("0")===0){
+        //remove leading zeros unless its decmial
+        if(currText.indexOf("0") === 0 && currText.indexOf(".")<0){
            currText=currText.substring(1);
         }
         //check for null input
@@ -18,7 +20,7 @@ function DownPaymentField(props) {
             currText="0"
             props.onDownPaymentChange((currText))
             //else we parse the field only if its a number
-        }else if(currText.length>0 && typeof parseFloat(currText) ==='number'){
+        }else if(currText.length>0 && regEx.test(currText)){
             //check if its higher than 100
             if(parseFloat(currText)>100){
                 currText="100";

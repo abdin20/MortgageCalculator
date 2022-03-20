@@ -6,19 +6,22 @@ function PriceTextField(props) {
 
     //round to 2 decimals  
     const cleanString = (event) => {
-
+        var regEx = new RegExp("^[0-9]+[.]?[0-9]*$");
+        var decimalRegEx = new RegExp("^[0]+[.][0-9]*$")
         let currText = event.target.value;
         //remove any commas and dollar signs
         currText = currText.replace(/[$,\s]/g, '')
-        //if input has nothing we set default to $0
-        if (currText.indexOf("0") === 0) {
+        
+        //remove leading zero only if its not a decimal
+        if (currText.indexOf("0") === 0 && currText.indexOf(".")<0) {
             currText = currText.substring(1);
         }
+            //if input has nothing we set default to $0
         if (currText.length < 1) {
             currText = "0"
             props.onPriceChange((currText))
-            //else we parse the field only if its a number
-        } else if (currText.length > 0 && typeof parseFloat(currText) === 'number') {
+            //else we parse the field only if if matches the regex we set
+        } else if (currText.length > 0 && (regEx.test(currText) || decimalRegEx.test(currText))) {
             //give parent function the new price
             props.onPriceChange((currText))
 
@@ -37,11 +40,8 @@ function PriceTextField(props) {
         }
         moneyString = props.currentValue.substring(0, props.currentValue.indexOf("."));
     }
-
-    let correctString = "$" + parseInt(moneyString).toLocaleString('en-US') + decimal;
-    // let moneyString="$"+(props.currentValue).toLocaleString('en-US', {maximumFractionDigits: 2})
-    // let moneyString= `$${rawNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-    // let moneyString=`$ +${props.currentValue.toLocaleString('en-US', {maximumFractionDigits: 2})}`
+    //add commas
+    let correctString = `$${moneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}` + decimal;
     return (
         <div>
             <Grid item xs={16} px={1}>
