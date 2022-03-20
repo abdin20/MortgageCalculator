@@ -19,7 +19,7 @@ function LenderInfoRow(props) {
                     {/* image and bank name */}
                     <Grid item xs={4} sm={2} md={2} lg={3} >
                         <Grid container direction='row' justifyContent="center" alignItems="center">
-                            <Grid item xs={12} sm={12} md={12} lg={4} >
+                            <Grid item xs={12} sm={12} md={12} lg={5} >
                                 <Image src={logo} width="100%" height="100%" />
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} lg={4} pl={1}>
