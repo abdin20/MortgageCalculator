@@ -17,7 +17,7 @@ function LenderInfoRow(props) {
                 <Grid container direction="row" className=" resize border-b-2" justifyContent="flex-start" alignItems="center" spacing={1} my={3}>
 
                     {/* image and bank name */}
-                    <Grid item xs={4} sm={2} md={2} lg={3} py={2}>
+                    <Grid item xs={4} sm={3} md={2} lg={3} py={2}>
                         <Grid container direction='row' justifyContent="center" alignItems="center">
                             <Grid item xs={12} sm={12} md={12} lg={6}>
                                 <Image src={logo} width="100%" height="100%" objectFit="contain" />
@@ -35,7 +35,7 @@ function LenderInfoRow(props) {
                                 <div className="md:text-3xl sm:text-2xl text-xl font-bold text-gray-700">{`${bank.rate}%`}</div>
                             </Grid>
                             <Grid item xs={3} mb={2} >
-                                <div className="text-sm hidden whitespace-nowrap sm:block text-gray-600 mt-1 font-normal"  >{`${bank.year}-YEAR ${bank.type.toUpperCase()}`}</div>
+                                <div className="text-sm whitespace-nowrap sm:block text-gray-600 mt-1 font-normal"  >{`${bank.year}-YEAR ${bank.type.toUpperCase()}`}</div>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -54,18 +54,19 @@ function LenderInfoRow(props) {
         <div>
             <Grid container direction="column">
                 <Grid container direction="row" className="border-[#ED8936] border-b-2" justifyContent="flex-left" alignItems="center" mt={0} spacing={1}>
-                    <Grid item xs={4} sm={4.2} md={4.3} lg={5.4} >
-                        <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="div"> Lender </Typography>
+                    <Grid item xs={5} sm={4.2} md={4.3} lg={5.1} >
+                        <Typography className="font-normal md:text-2xl sm:text-2xl text-xl text-gray-700 tracking-wide" mb={1} component="div"> Lender </Typography>
                     </Grid>
-                    <Grid item xs={4} sm={3.4} md={3.5} lg={3.3}>
-                        <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="div"> Rate </Typography>
+                    <Grid item xs={3} sm={3.4} md={3.5} lg={3.9}>
+                        <Typography className="font-normal md:text-2xl sm:text-2xl text-xl text-gray-700  tracking-wide" mb={1} component="div"> Rate </Typography>
                     </Grid>
                     <Grid item xs={4} sm={4.2} md={3.8} lg={2} >
-                        <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="p"> Monthly Payment </Typography>
+                        <Typography className="font-normal md:text-2xl sm:text-2xl text-xl text-gray-700 tracking-wide" mb={1} component="p"> Monthly Payment </Typography>
                     </Grid>
                 </Grid>
 
                 {content}
+                
             </Grid>
         </div>
 

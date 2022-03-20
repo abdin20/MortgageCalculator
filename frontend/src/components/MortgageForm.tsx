@@ -134,18 +134,18 @@ function MortgageForm() {
                 var terms = []
                 //push new term lengths in
                 data.forEach(x => { terms.push(x.year) })
-                
+
                 //set state by adding new list of term lengths
                 setMortgageState(prevState => {
 
-                    let currTermLength=prevState.termLength
+                    let currTermLength = prevState.termLength
                     //check if box selecting term length exists in type
                     //if not we set to first value in terms list
-                    if(!terms.includes(currTermLength)){
-                        currTermLength=terms[0]
+                    if (!terms.includes(currTermLength)) {
+                        currTermLength = terms[0]
                     }
-                    bankStateChange({ ...prevState, termType: termType, termLengths: terms, termLength:currTermLength })
-                    return { ...prevState, termType: termType, termLengths: terms, termLength:currTermLength }
+                    bankStateChange({ ...prevState, termType: termType, termLengths: terms, termLength: currTermLength })
+                    return { ...prevState, termType: termType, termLengths: terms, termLength: currTermLength }
                 })
             });
 
@@ -154,30 +154,30 @@ function MortgageForm() {
     //run on start up to load info for default state
     useEffect(() => {
 
-            //fetch list of term lengths from DB depending on type
-            fetch(`http://127.0.0.1:8080/api/mortgageSearch/typeSearch/?mortgageType=${termKey[mortgageState.termType]}`)
-                .then(response => response.json())
-                .then(data => {
-                    var terms = []
+        //fetch list of term lengths from DB depending on type
+        fetch(`http://127.0.0.1:8080/api/mortgageSearch/typeSearch/?mortgageType=${termKey[mortgageState.termType]}`)
+            .then(response => response.json())
+            .then(data => {
+                var terms = []
 
-                    //push new term lengths in for the type 
-                    data.forEach(x => { terms.push(x.year) })
+                //push new term lengths in for the type 
+                data.forEach(x => { terms.push(x.year) })
 
-                    //get initial list of all banks 
-                    fetch(`http://127.0.0.1:8080/api/mortgageSearch/all`)
-                        .then(response => response.json())
-                        .then(data => {
+                //get initial list of all banks 
+                fetch(`http://127.0.0.1:8080/api/mortgageSearch/all`)
+                    .then(response => response.json())
+                    .then(data => {
 
-                            var fetchedAllBanks = data;
-                            setMortgageState(prevState => {
-                                
-                                //run bankstate change to show proper banks based on state info
-                                bankStateChange({ ...prevState, termLengths: terms, allBanks: fetchedAllBanks })
-                                //change mortgage form state as well
-                                return { ...prevState, termLengths: terms, allBanks: fetchedAllBanks }
-                            })
-                        });
-                });
+                        var fetchedAllBanks = data;
+                        setMortgageState(prevState => {
+
+                            //run bankstate change to show proper banks based on state info
+                            bankStateChange({ ...prevState, termLengths: terms, allBanks: fetchedAllBanks })
+                            //change mortgage form state as well
+                            return { ...prevState, termLengths: terms, allBanks: fetchedAllBanks }
+                        })
+                    });
+            });
 
     }, [])
     //get bank info from backend and add to this array, do calculations on backend
@@ -190,16 +190,15 @@ function MortgageForm() {
                 <link rel="shortcut icon" href="/static/favicon.ico" />
             </Head>
 
-            <Grid container spacing={0} px={4} py={2} justifyContent="flex-start" alignItems="flex-start" direction="row">
+            <Grid container spacing={0} pl={2} py={2} justifyContent="flex-start" alignItems="flex-start" direction="row">
 
                 {/* mortgage calculator part */}
-                <Grid item justifyContent="left" px={1} xs={12} sm={12} md={12} lg={3} sx={{ maxWidth: 275 }} >
+                <Grid item px={2} xs={12} sm={4} md={2.4} lg={2.4} sx={{ maxWidth: 275 }} >
                     {/* insert each element column wise */}
-
                     {/* term length/type row */}
                     <Grid container direction="column" sx={{ backgroundColor: "#FFFFFF", maxWidth: 275 }}>
                         <Grid container direction="row">
-                            <TermLengthBox currentValue={mortgageState.termLength}  termLengths={mortgageState.termLengths} onTermLengthChange={termLengthChangeHandler} termType={1}></TermLengthBox>
+                            <TermLengthBox currentValue={mortgageState.termLength} termLengths={mortgageState.termLengths} onTermLengthChange={termLengthChangeHandler} termType={1}></TermLengthBox>
                             <TermTypeBox currentValue={mortgageState.termType} onTermTypeChange={termTypeChangeHandler}></TermTypeBox>
 
                         </Grid>
@@ -222,23 +221,23 @@ function MortgageForm() {
                 </Grid>
 
 
-                <Grid item xs={12} sm={12} md={12} lg={8} >
+                <Grid item xs={12} sm={10} md={5} lg={5} >
                     <Grid container direction="column">
                         {/* first row in column is term stuff */}
-                        <Grid container justifyContent="center" alignItems="center" direction="row" sx={{ backGroundColor: '#EDF2F7' }} p={2} spacing={1}>
-                            <Grid item xs={3} sm={3} md={3} lg={3} px={1} >
+                        <Grid container justifyContent="center" alignItems="center" direction="row" sx={{ backGroundColor: '#EDF2F7' }} p={5} spacing={1}>
+                            <Grid item xs={4}  md={4} lg={4}>
                                 <Button variant="contained" sx={{ color: 'white', backgroundColor: '#ED8936', textTransform: 'none' }}>New Mortgage</Button>
                             </Grid>
-                            <Grid item xs={3} sm={3} md={3} lg={3} >
+                            <Grid item xs={4}  md={4} lg={4}>
                                 <Button variant="contained" sx={{ color: 'black', backgroundColor: '#FFFFFF', textTransform: 'none' }}>Switch Transfer</Button>
                             </Grid>
-                            <Grid item xs={3} sm={3} md={3} lg={3} >
+                            <Grid item xs={4} md={4} lg={4}>
                                 <Button variant="contained" sx={{ color: 'black', backgroundColor: '#FFFFFF', textTransform: 'none' }}>Refinancing</Button>
                             </Grid>
                         </Grid>
 
-                        <LenderInfoRow mortgageState={mortgageState} bankInfo={bankState}></LenderInfoRow>
 
+                            <LenderInfoRow mortgageState={mortgageState} bankInfo={bankState}></LenderInfoRow>
 
                     </Grid>
                 </Grid>
