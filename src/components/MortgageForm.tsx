@@ -15,66 +15,48 @@ import TermTypeBox from './TermTypeBox';
 import LenderInfoRow from './LenderInfoRow';
 
 
-//item component for stuff in box
-// function Item(props: BoxProps) {
-//     const { sx, ...other } = props;
-//     return (
-//         <Box
-//             sx={{
-//                 ...sx,
-//             }}
-//             {...other}
-//         />
-//     );
-// }
 
-var banks = []
 function MortgageForm() {
     const termKey = { 1: "fixed", 2: "variable" }
 
-    const [mortgageState, setMortgageState] = useState({ termLength: 1, termLengths: [], termType: "1", homePrice: '500000', downPayment: "10", mortgageAmount: '450000.00', amortization: '25' })
+    const [mortgageState, setMortgageState] = useState({ allBanks: [], termLength: 1, termLengths: [], termType: "1", homePrice: '500000', downPayment: "10", mortgageAmount: '450000.00', amortization: '25' })
     const [bankState, setBankState] = useState([])
     //function to get new price from home price change
-    
-    
-    const bankStateChange=(currState)=>{
+
+
+    const bankStateChange = (currState) => {
         const mortgageType = termKey[currState.termType];
         const mortgageLength = currState.termLength;
         const downPayment = parseInt(currState.downPayment) >= 20 ? '2' : '1';
 
         //fetch rate data from backend
-        fetch(`http://localhost:8080/api/mortgageSearch/rateSearch/?mortgageType=${mortgageType}&mortgageLength=${mortgageLength}&downPayment=1`)
-            .then(response => response.json())
-            .then(data => {
 
-                //get correct downpayment level
-                let correctDownPayment = data.filter(x => { return x.down_payment_level === downPayment })
+        //get correct banks from list of all banks
+        let correctDownPayment = currState.allBanks.filter(x => {
+            return x.down_payment_level === downPayment && x.year === mortgageLength && x.type === mortgageType
+        })
 
-                let filteredResults = []
+        let filteredResults = []
 
-                //remove duplicate banks
-                //array is already sorted by rate so if one exists we remove it since it will be higher
-                correctDownPayment.forEach(bank => {
-                    if (!filteredResults.some(el => { return el.source === bank.source })) {
-                        filteredResults.push(bank)
-                    }
-                })
+        //remove duplicate banks
+        //array is already sorted by rate so if one exists we remove it since it will be higher
+        correctDownPayment.forEach(bank => {
+            if (!filteredResults.some(el => { return el.source === bank.source })) {
+                filteredResults.push(bank)
+            }
+        })
 
-                filteredResults.forEach(function (bankObj, index) {
-                    // part and arr[index] point to the same object
-                    // so changing the object that part points to changes the object that arr[index] points to
-                    let principal = parseFloat(currState.mortgageAmount)
-                    let percentageRate = parseFloat(bankObj.rate) / 12 / 100
-                    let lengthOfLoan = 12 * parseInt(currState.amortization)
-                    var monthlyPayment = principal * ((percentageRate * (Math.pow((1 + percentageRate), lengthOfLoan))) / ((Math.pow((1 + percentageRate), lengthOfLoan)) - 1))
-                    var moneyString = `${monthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
-                    
-                    bankObj.payment = moneyString;
-                });
-                setBankState(filteredResults);
-            });
-        
+        //add payment info to each of the filtered banks
+        filteredResults.forEach(function (bankObj, index) {
+            let principal = parseFloat(currState.mortgageAmount)
+            let percentageRate = parseFloat(bankObj.rate) / 12 / 100
+            let lengthOfLoan = 12 * parseInt(currState.amortization)
+            var monthlyPayment = principal * ((percentageRate * (Math.pow((1 + percentageRate), lengthOfLoan))) / ((Math.pow((1 + percentageRate), lengthOfLoan)) - 1))
+            var moneyString = `${monthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
 
+            bankObj.payment = moneyString;
+        });
+        setBankState(filteredResults);
 
 
     }
@@ -137,6 +119,7 @@ function MortgageForm() {
 
         //change number of years
         setMortgageState(prevState => {
+
             bankStateChange({ ...prevState, termLength: years })
             return { ...prevState, termLength: years }
         })
@@ -144,26 +127,57 @@ function MortgageForm() {
 
     const termTypeChangeHandler = (termType) => {
 
-        //fetch list of term lengths from DB depending on type
+        //fetch new term lengths
         fetch(`http://localhost:8080/api/mortgageSearch/typeSearch/?mortgageType=${termKey[termType]}`)
             .then(response => response.json())
             .then(data => {
                 var terms = []
                 //push new term lengths in
                 data.forEach(x => { terms.push(x.year) })
+                
+                //set state by adding new list of term lengths
                 setMortgageState(prevState => {
 
-                    bankStateChange({ ...prevState, termType: termType, termLengths: terms })
-                    return { ...prevState, termType: termType, termLengths: terms }
+                    let currTermLength=prevState.termLength
+                    //check if box selecting term length exists in type
+                    //if not we set to first value in terms list
+                    if(!terms.includes(currTermLength)){
+                        currTermLength=terms[0]
+                    }
+                    bankStateChange({ ...prevState, termType: termType, termLengths: terms, termLength:currTermLength })
+                    return { ...prevState, termType: termType, termLengths: terms, termLength:currTermLength }
                 })
             });
+
     }
 
     //run on start up to load info for default state
-    useEffect(()=>{
-        
-        //this will get the term lengths and update state immediately
-        termTypeChangeHandler(mortgageState.termType);
+    useEffect(() => {
+
+            //fetch list of term lengths from DB depending on type
+            fetch(`http://127.0.0.1:8080/api/mortgageSearch/typeSearch/?mortgageType=${termKey[mortgageState.termType]}`)
+                .then(response => response.json())
+                .then(data => {
+                    var terms = []
+
+                    //push new term lengths in for the type 
+                    data.forEach(x => { terms.push(x.year) })
+
+                    //get initial list of all banks 
+                    fetch(`http://127.0.0.1:8080/api/mortgageSearch/all`)
+                        .then(response => response.json())
+                        .then(data => {
+
+                            var fetchedAllBanks = data;
+                            setMortgageState(prevState => {
+                                
+                                //run bankstate change to show proper banks based on state info
+                                bankStateChange({ ...prevState, termLengths: terms, allBanks: fetchedAllBanks })
+                                //change mortgage form state as well
+                                return { ...prevState, termLengths: terms, allBanks: fetchedAllBanks }
+                            })
+                        });
+                });
 
     }, [])
     //get bank info from backend and add to this array, do calculations on backend
@@ -185,7 +199,7 @@ function MortgageForm() {
                     {/* term length/type row */}
                     <Grid container direction="column" sx={{ backgroundColor: "#FFFFFF", maxWidth: 275 }}>
                         <Grid container direction="row">
-                            <TermLengthBox currentValue={mortgageState.termLength} termLengths={mortgageState.termLengths} onTermLengthChange={termLengthChangeHandler} termType={1}></TermLengthBox>
+                            <TermLengthBox currentValue={mortgageState.termLength}  termLengths={mortgageState.termLengths} onTermLengthChange={termLengthChangeHandler} termType={1}></TermLengthBox>
                             <TermTypeBox currentValue={mortgageState.termType} onTermTypeChange={termTypeChangeHandler}></TermTypeBox>
 
                         </Grid>
@@ -215,7 +229,7 @@ function MortgageForm() {
                             <Grid item xs={3} sm={3} md={3} lg={3} px={1} >
                                 <Button variant="contained" sx={{ color: 'white', backgroundColor: '#ED8936', textTransform: 'none' }}>New Mortgage</Button>
                             </Grid>
-                            <Grid item xs={3}  sm={3} md={3} lg={3} >
+                            <Grid item xs={3} sm={3} md={3} lg={3} >
                                 <Button variant="contained" sx={{ color: 'black', backgroundColor: '#FFFFFF', textTransform: 'none' }}>Switch Transfer</Button>
                             </Grid>
                             <Grid item xs={3} sm={3} md={3} lg={3} >

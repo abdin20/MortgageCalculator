@@ -6,18 +6,20 @@ import MenuItem from '@mui/material/MenuItem';
 import { Grid } from '@mui/material';
 function TermLengthBox(props) {
 
-
+    //get list of years
     var years= props.termLengths;
-    //example output from db
 
+    //create menu item components with year list
     let menuItems = years.map(year => {
         return (<MenuItem key={year} value={year}>{year} Years</MenuItem>)
     })
 
+    //check if term length is set to default term
 
     const onSelectTermLengthChange = (event) => {
         props.onTermLengthChange(event.target.value);
     }
+
 
 
     return (

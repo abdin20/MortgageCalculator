@@ -14,16 +14,16 @@ function LenderInfoRow(props) {
         return (
 
             <div key={`${(Math.random() + 1).toString(36).substring(7)}`}>
-                <Grid container direction="row" className=" resize border-b-2" justifyContent="flex-start" alignItems="center" spacing={1} my={2}>
+                <Grid container direction="row" className=" resize border-b-2" justifyContent="flex-start" alignItems="center" spacing={1} my={3}>
 
                     {/* image and bank name */}
-                    <Grid item xs={4} sm={2} md={2} lg={3} >
+                    <Grid item xs={4} sm={2} md={2} lg={3} py={2}>
                         <Grid container direction='row' justifyContent="center" alignItems="center">
-                            <Grid item xs={12} sm={12} md={12} lg={5} >
-                                <Image src={logo} width="100%" height="100%" />
+                            <Grid item xs={12} sm={12} md={12} lg={6}>
+                                <Image src={logo} width="100%" height="100%" objectFit="contain" />
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} lg={4} pl={1}>
-                                <Typography className="text-gray-700 sm:text-lg text-md" mb={1}  component="div">{bank.source}</Typography>
+                                <div className="text-gray-700 sm:text-lg text-md">{bank.source}</div>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -53,19 +53,19 @@ function LenderInfoRow(props) {
     return (
         <div>
             <Grid container direction="column">
-            <Grid container direction="row" className="border-[#ED8936] border-b-2" justifyContent="flex-left" alignItems="center"  mt={0} spacing={1}>
-                <Grid item xs={4} sm={4.2} md={4.3} lg={5.4} >
-                    <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide"  mb={1} component="div"> Lender </Typography>
+                <Grid container direction="row" className="border-[#ED8936] border-b-2" justifyContent="flex-left" alignItems="center" mt={0} spacing={1}>
+                    <Grid item xs={4} sm={4.2} md={4.3} lg={5.4} >
+                        <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="div"> Lender </Typography>
+                    </Grid>
+                    <Grid item xs={4} sm={3.4} md={3.5} lg={3.3}>
+                        <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="div"> Rate </Typography>
+                    </Grid>
+                    <Grid item xs={4} sm={4.2} md={3.8} lg={2} >
+                        <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="p"> Monthly Payment </Typography>
+                    </Grid>
                 </Grid>
-                <Grid item xs={4} sm={3.4} md={3.5} lg={3.3}>
-                    <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="div"> Rate </Typography>
-                </Grid>
-                <Grid item xs={4} sm={4.2} md={3.8} lg={2} >
-                    <Typography className="font-normal py-1 sm:px-4 text-md text-gray-700 tracking-wide" mb={1} component="p"> Monthly Payment </Typography>
-                </Grid>
-            </Grid>
-         
-            {content}
+
+                {content}
             </Grid>
         </div>
 
