@@ -203,10 +203,10 @@ function MortgageForm() {
             <Grid container spacing={0} pl={2} py={2} justifyContent="flex-start" alignItems="flex-start" direction="row">
 
                 {/* mortgage calculator part */}
-                <Grid item px={2} xs={12} sm={8} md={3.5} lg={3}  >
+                <Grid item px={2} xs={12} sm={8} md={4} lg={3.4}  xl={2.4}>
                     {/* insert each element column wise */}
                     {/* term length/type row */}
-                    <Grid container direction="column" justifyContent="center" alignItems="flex-start"sx={{ backgroundColor: "#FFFFFF",maxWidth:300}}>
+                    <Grid container direction="column" justifyContent="center" alignItems="flex-start"sx={{ backgroundColor: "#FFFFFF",maxWidth:450}}>
                         <Grid container direction="row" >
                             <TermLengthBox currentValue={mortgageState.termLength} termLengths={mortgageState.termLengths} onTermLengthChange={termLengthChangeHandler} termType={1}></TermLengthBox>
                             <TermTypeBox currentValue={mortgageState.termType} onTermTypeChange={termTypeChangeHandler}></TermTypeBox>

@@ -44,7 +44,7 @@ function DownPaymentField(props) {
     }
 
     //add the decimals to the string
-    let correctString=parseInt(moneyString).toLocaleString('en-US')+decimal;
+    let correctString = `${moneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}` + decimal;
 
     return (
         <div> <Grid item xs={16} pt={1} px={1}>

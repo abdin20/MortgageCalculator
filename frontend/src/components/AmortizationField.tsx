@@ -8,23 +8,20 @@ function AmortizationField(props) {
         let currText = event.target.value;
 
         //check for default value to remove 0
-        if (currText.indexOf("1") === 0) {
-            currText = currText.substring(1);
-        }
+
 
         //if input has nothing we set default to 0
-        if (currText.length < 1) {
-            props.onAmortizationChange('1');
-            //else we parse the field only if its a number
-        } else if (currText.length > 0 && !isNaN(currText)) {
+        if (!isNaN(currText) && currText.length>0 && isFinite(parseInt(currText))) {
             props.onAmortizationChange(currText);
+        }else{
+            props.onAmortizationChange("0");
         }
 
     }
     return (
         <div>
 
-            <Grid item xs={16}  pt={1} px={1}>
+            <Grid item xs={16} pt={1} px={1}>
                 <InputLabel className="text-blue-800" id="term-type-label">Amortization</InputLabel>
             </Grid>
             <Grid item xs={16} px={1}>
