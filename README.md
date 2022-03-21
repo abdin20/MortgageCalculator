@@ -1,4 +1,4 @@
-# MortageCalculator
+# MortgageCalculator
 
 Mortgage payment calculator web app built with Next.js, Django, and MongoDB.
 
