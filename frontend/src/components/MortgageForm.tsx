@@ -36,6 +36,16 @@ function MortgageForm() {
             return x.down_payment_level === downPayment && x.year === mortgageLength && x.type === mortgageType
         })
 
+        correctDownPayment=correctDownPayment.sort((a,b)=>{
+            if( parseFloat(a.rate)>parseFloat(b.rate)){
+                return 1;
+            }else if ( parseFloat(a.rate)<parseFloat(b.rate)){
+                return -1
+            }else{
+                return 0;
+            }
+        })
+
         let filteredResults = []
 
         //remove duplicate banks
@@ -193,11 +203,11 @@ function MortgageForm() {
             <Grid container spacing={0} pl={2} py={2} justifyContent="flex-start" alignItems="flex-start" direction="row">
 
                 {/* mortgage calculator part */}
-                <Grid item px={2} xs={12} sm={4} md={2.4} lg={2.4} sx={{ maxWidth: 275 }} >
+                <Grid item px={2} xs={12} sm={8} md={3.5} lg={3}  >
                     {/* insert each element column wise */}
                     {/* term length/type row */}
-                    <Grid container direction="column" sx={{ backgroundColor: "#FFFFFF", maxWidth: 275 }}>
-                        <Grid container direction="row">
+                    <Grid container direction="column" justifyContent="center" alignItems="flex-start"sx={{ backgroundColor: "#FFFFFF",maxWidth:300}}>
+                        <Grid container direction="row" >
                             <TermLengthBox currentValue={mortgageState.termLength} termLengths={mortgageState.termLengths} onTermLengthChange={termLengthChangeHandler} termType={1}></TermLengthBox>
                             <TermTypeBox currentValue={mortgageState.termType} onTermTypeChange={termTypeChangeHandler}></TermTypeBox>
 
@@ -221,7 +231,7 @@ function MortgageForm() {
                 </Grid>
 
 
-                <Grid item xs={12} sm={10} md={5} lg={5} >
+                <Grid item xs={12} sm={12} md={6} lg={6} >
                     <Grid container direction="column">
                         {/* first row in column is term stuff */}
                         <Grid container justifyContent="center" alignItems="center" direction="row" sx={{ backGroundColor: '#EDF2F7' }} p={5} spacing={1}>

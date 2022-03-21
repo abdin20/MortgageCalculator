@@ -54,13 +54,13 @@ function LenderInfoRow(props) {
         <div>
             <Grid container direction="column">
                 <Grid container direction="row" className="border-[#ED8936] border-b-2" justifyContent="flex-left" alignItems="center" mt={0} spacing={1}>
-                    <Grid item xs={5} sm={4.2} md={4.3} lg={5.1} >
+                    <Grid item xs={5.4} sm={5.4} md={4.3} lg={5.1} >
                         <Typography className="font-normal md:text-2xl sm:text-2xl text-xl text-gray-700 tracking-wide" mb={1} component="div"> Lender </Typography>
                     </Grid>
-                    <Grid item xs={3} sm={3.4} md={3.5} lg={3.9}>
+                    <Grid item xs={2.5} sm={3.5} md={3.5} lg={3.9}>
                         <Typography className="font-normal md:text-2xl sm:text-2xl text-xl text-gray-700  tracking-wide" mb={1} component="div"> Rate </Typography>
                     </Grid>
-                    <Grid item xs={4} sm={4.2} md={3.8} lg={2} >
+                    <Grid item xs={1} sm={1} md={3.8} lg={2} >
                         <Typography className="font-normal md:text-2xl sm:text-2xl text-xl text-gray-700 tracking-wide" mb={1} component="p"> Monthly Payment </Typography>
                     </Grid>
                 </Grid>
