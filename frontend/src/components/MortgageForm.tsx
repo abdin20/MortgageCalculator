@@ -60,7 +60,8 @@ function MortgageForm() {
         filteredResults.forEach(function (bankObj, index) {
             let principal = parseFloat(currState.mortgageAmount)
             let percentageRate = parseFloat(bankObj.rate) / 12 / 100
-            let lengthOfLoan = 12 * parseInt(currState.amortization)
+            //check if amortization is at least
+            let lengthOfLoan = 12 *  (parseInt(currState.amortization)===0 ? 1:parseInt(currState.amortization))
             var monthlyPayment = principal * ((percentageRate * (Math.pow((1 + percentageRate), lengthOfLoan))) / ((Math.pow((1 + percentageRate), lengthOfLoan)) - 1))
             var moneyString = `${monthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
 
